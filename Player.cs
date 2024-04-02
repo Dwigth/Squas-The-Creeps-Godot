@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Diagnostics;
 
 public partial class Player : CharacterBody3D
 {
@@ -16,6 +17,9 @@ public partial class Player : CharacterBody3D
 
 	[Export]
 	public int BounceImpulse { get; set; } = 16;
+
+	[Signal]
+	public delegate void HitEventHandler();
 	public override void _PhysicsProcess(double delta)
 	{
 		// We create a local variable to store the input direction.
@@ -87,5 +91,17 @@ public partial class Player : CharacterBody3D
 				}
 			}
 		}
+	}
+	private void Die()
+	{
+		EmitSignal(SignalName.Hit);
+		QueueFree();
+	}
+
+	// We also specified this function name in PascalCase in the editor's connection window
+	private void OnMobDetectorBodyEntered(Node3D body)
+	{
+		Debug.WriteLine("Die die die");
+		Die();
 	}
 }
